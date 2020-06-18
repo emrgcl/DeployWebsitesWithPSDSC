@@ -1,5 +1,12 @@
+[Cmdletbinding()]
+Param(
+
+    [string]$ConfigurationDataPath,
+    [string]$OutPutPath
+
+)
 [DSCLocalConfigurationManager()]
-configuration TFSMetaConfig
+configuration Deploy-MetoConfig
 {
     Node $allnodes.nodename
     {
@@ -13,7 +20,7 @@ configuration TFSMetaConfig
             StatusRetentionTimeInDays = 30
         }
         
-        ReportServerWeb RepotrtServer1
+        ReportServerWeb PullServerReport
         {
             ServerURL = $ConfigurationData.NonNodeData.DSCProdServerURL
             RegistrationKey = $ConfigurationData.NonNodeData.registrationKey
@@ -21,64 +28,18 @@ configuration TFSMetaConfig
            
     }
        
-    Node $allnodes.Where{$_.role -eq 'UYGULAMA'}.nodename
+    Node $allnodes.Where{$_.role -eq 'FrontEnd'}.nodename
     {
         $ConfigurationNamesArray = @()
         $ConfigurationNamesArray = @("DeployWebsitesWithPSDSC")
         
-        ConfigurationRepositoryWeb Turkcell-Prod-PullSrv
+        ConfigurationRepositoryWeb DSCProdServer
         {
             ServerURL = $ConfigurationData.NonNodeData.DSCProdServerURL
             RegistrationKey = $ConfigurationData.NonNodeData.registrationKey
             ConfigurationNames = $ConfigurationNamesArray
         }
-
-        PartialConfiguration "DeployWebsitesWithPSDSC"
-        {
-            Description                     = "DeployWebsitesWithPSDSC"
-            ConfigurationSource             = @("[ConfigurationRepositoryWeb]RepotrtServer1")
-            RefreshMode                     = 'Pull'
-        }
-
-        PartialConfiguration "$($node.role)_Roles"
-        {
-            Description                     = "$($node.role)_Roles"
-            ConfigurationSource             = @("[ConfigurationRepositoryWeb]Turkcell-Prod-PullSrv")
-            RefreshMode                     = 'Pull'
-        }
-
-        PartialConfiguration "$($node.role)_Services"
-        {
-            Description                     = "$($node.role)_Services"
-            ConfigurationSource             = @("[ConfigurationRepositoryWeb]Turkcell-Prod-PullSrv")
-            RefreshMode                     = 'Pull'
-            DependsOn                       = "[PartialConfiguration]$($node.role)_Roles"
-        }
-
-        PartialConfiguration "$($node.role)_AppPool"
-        {
-            Description                     = "$($node.role)_AppPool"
-            ConfigurationSource             = @("[ConfigurationRepositoryWeb]Turkcell-Prod-PullSrv")
-            RefreshMode                     = 'Pull'
-            DependsOn                       = "[PartialConfiguration]$($node.role)_Roles"
-        }
-
-        PartialConfiguration "$($node.role)_Sites"
-        {
-            Description                     = "$($node.role)_Sites"
-            ConfigurationSource             = @("[ConfigurationRepositoryWeb]Turkcell-Prod-PullSrv")
-            RefreshMode                     = 'Pull'
-            DependsOn                       = "[PartialConfiguration]$($node.role)_AppPool"
-        }
-
-        PartialConfiguration "$($node.role)_Applications"
-        {
-            Description                     = "$($node.role)_Applications"
-            ConfigurationSource             = @("[ConfigurationRepositoryWeb]Turkcell-Prod-PullSrv")
-            RefreshMode                     = 'Pull'
-            DependsOn                       = "[PartialConfiguration]$($node.role)_Sites"
-        }
     }
 }
 
-    TFSMetaConfig -ConfigurationData .\Powershell\envanter.psd1 -OutputPath C:\temp\TFS\TFSMetaConfig
+    Deploy-MetoConfig -ConfigurationData $ConfigurationDataPath -OutputPath $OutPutPath

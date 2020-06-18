@@ -1,7 +1,7 @@
 @{
     NonNodeData =
     @{
-        registrationKey     = 'cacf30a0-3a38-4142-84e0-f77801e2b6d9'
+        registrationKey     = '8dada20f-b6f8-41e7-8d3c-099cc3c6bf14'
         DSCProdServerURL    = 'https://emreg-dsc.contoso.com/psdscpullserver.svc'
     }
 

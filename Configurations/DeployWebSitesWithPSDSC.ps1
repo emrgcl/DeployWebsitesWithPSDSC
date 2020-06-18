@@ -36,6 +36,7 @@ Configuration Install-HelloSite {
             managedPipelineMode = "Integrated"
             managedRuntimeVersion = "v4.0"
             State = "Started"
+            
         }
 
         xWebsite "DeployWebsitesWithPSDSC"
