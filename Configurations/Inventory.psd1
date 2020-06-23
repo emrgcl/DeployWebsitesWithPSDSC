@@ -11,6 +11,16 @@
             NodeName    = 'emreg-web01.contoso.com'
             Role        = 'FrontEnd'
             Location    = 'Test'
+        },
+                @{
+            NodeName    = 'emreg-web02.contoso.com'
+            Role        = 'FrontEnd'
+            Location    = 'Test'
+        },
+                @{
+            NodeName    = 'emreg-web03.contoso.com'
+            Role        = 'FrontEnd'
+            Location    = 'Test'
         }
     )
 }
